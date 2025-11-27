@@ -35,9 +35,6 @@ function Gameboard() {
         // Call function translateToBoardStyle and store in the the numberRow and numberColumn variables
         let [numberRow, numberColumn] = translateToBoardStyle(number);
 
-        console.log(numberRow);
-        console.log(numberColumn);
-
         // Place the player side into the gameboard object using rows and cols variables
         board[numberRow][numberColumn] = playerSide;
     }
@@ -173,8 +170,12 @@ function Player(name, side) {
 
     // start a loop that would be working until someone wins or the game ended because no more space left in gameboard list (while true)
     while (true) {
-        makeMove(priorityPlayer, board);
-        makeMove(secondaryPlayer, board);
+        if (
+            !makeMove(priorityPlayer, board) ||
+            !makeMove(secondaryPlayer, board)
+        ) {
+            break;
+        }
     }
 
     // Create a function makeMove(player)
