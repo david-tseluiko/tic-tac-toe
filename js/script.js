@@ -5,17 +5,22 @@ function Gameboard() {
     const rows = 3;
     const cols = 3;
 
+    const elements = Array.from(document.querySelectorAll(".list__item"));
     let board = [];
     // Store the gameboard in 3d array using the for loop (in order to make the checking for win a bit easier)
     for (let i = 0; i < rows; i++) {
         board[i] = [];
         for (let j = 0; j < cols; j++) {
-            board[i].push("");
+            board[i].push(elements[translateToArrayStyle(i, j)]);
         }
     }
 
     function getBoard() {
         return board;
+    }
+
+    function translateToArrayStyle(numberRow, numberColumn) {
+        return (numberRow * 3) + numberColumn;
     }
 
     // Create a function translateToBoardStyle that would translate a number between 1, 9 to 3d ():
@@ -149,11 +154,11 @@ function Player(name, side) {
     // Ask player1 which side they want to play: X or O
     let firstPlayerSide;
 
-    do {
-        firstPlayerSide = prompt(
-            "First player, do you want to play X or O?"
-        ).toLowerCase();
-    } while (firstPlayerSide !== "x" && firstPlayerSide !== "o");
+    // do {
+    //     firstPlayerSide = prompt(
+    //         "First player, do you want to play X or O?"
+    //     ).toLowerCase();
+    // } while (firstPlayerSide !== "x" && firstPlayerSide !== "o");
 
     let priorityPlayer;
     let secondaryPlayer;
@@ -169,14 +174,14 @@ function Player(name, side) {
     }
 
     // start a loop that would be working until someone wins or the game ended because no more space left in gameboard list (while true)
-    while (true) {
-        if (
-            !makeMove(priorityPlayer, board) ||
-            !makeMove(secondaryPlayer, board)
-        ) {
-            break;
-        }
-    }
+    // while (true) {
+    //     if (
+    //         !makeMove(priorityPlayer, board) ||
+    //         !makeMove(secondaryPlayer, board)
+    //     ) {
+    //         break;
+    //     }
+    // }
 
     // Create a function makeMove(player)
     function makeMove(player, board) {
