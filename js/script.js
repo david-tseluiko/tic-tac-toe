@@ -20,7 +20,7 @@ function Gameboard() {
     }
 
     function translateToArrayStyle(numberRow, numberColumn) {
-        return (numberRow * 3) + numberColumn;
+        return numberRow * 3 + numberColumn;
     }
 
     // Create a function translateToBoardStyle that would translate a number between 1, 9 to 3d ():
@@ -41,12 +41,12 @@ function Gameboard() {
         let [numberRow, numberColumn] = translateToBoardStyle(number);
 
         // Place the player side into the gameboard object using rows and cols variables
-        board[numberRow][numberColumn] = playerSide;
+        board[numberRow][numberColumn].textContent = playerSide;
     }
 
     function isOccupied(number) {
         let [numberRow, numberColumn] = translateToBoardStyle(number);
-        return board[numberRow][numberColumn] !== "";
+        return board[numberRow][numberColumn].textContent !== "";
     }
 
     // isWonVertically which would take number and playerSide
@@ -57,7 +57,7 @@ function Gameboard() {
         // Loop through each global row
         for (let i = 0; i < rows; i++) {
             // Check if each board[globalRow][localCols] equal to playerSide
-            if (board[i][numberColumn] !== playerSide) {
+            if (board[i][numberColumn].textContent !== playerSide) {
                 return false;
             }
         }
@@ -72,7 +72,7 @@ function Gameboard() {
         // Loop through each global column
         for (let i = 0; i < cols; i++) {
             // Check if each board[localRow][globalColumn] equal to playerSide
-            if (board[numberRow][i] !== playerSide) return false;
+            if (board[numberRow][i].textContent !== playerSide) return false;
         }
         return true;
     }
@@ -101,10 +101,19 @@ function Gameboard() {
         // Create a for loop
         // Loop (i) through each global row
         for (let i = 0; i < rows; i++) {
-            if (board[i][leftDiagonal.column] !== playerSide) {
+            try {
+                if (board[i][leftDiagonal.column].textContent !== playerSide) {
+                    leftDiagonal.isWinning = false;
+                }
+            } catch (TypeError) {
                 leftDiagonal.isWinning = false;
             }
-            if (board[i][rightDiagonal.column] !== playerSide) {
+
+            try {
+                if (board[i][rightDiagonal.column].textContent !== playerSide) {
+                    rightDiagonal.isWinning = false;
+                }
+            } catch (TypeError) {
                 rightDiagonal.isWinning = false;
             }
 
@@ -120,7 +129,7 @@ function Gameboard() {
         // Check each gameboard value and if you find empty value
         for (let i = 0; i < rows; i++) {
             for (let j = 0; j < cols; j++) {
-                if (board[i][j] === "") {
+                if (board[i][j].textContent === "") {
                     return false;
                 }
             }
@@ -154,11 +163,11 @@ function Player(name, side) {
     // Ask player1 which side they want to play: X or O
     let firstPlayerSide;
 
-    // do {
-    //     firstPlayerSide = prompt(
-    //         "First player, do you want to play X or O?"
-    //     ).toLowerCase();
-    // } while (firstPlayerSide !== "x" && firstPlayerSide !== "o");
+    do {
+        firstPlayerSide = prompt(
+            "First player, do you want to play X or O?"
+        ).toLowerCase();
+    } while (firstPlayerSide !== "x" && firstPlayerSide !== "o");
 
     let priorityPlayer;
     let secondaryPlayer;
@@ -174,14 +183,14 @@ function Player(name, side) {
     }
 
     // start a loop that would be working until someone wins or the game ended because no more space left in gameboard list (while true)
-    // while (true) {
-    //     if (
-    //         !makeMove(priorityPlayer, board) ||
-    //         !makeMove(secondaryPlayer, board)
-    //     ) {
-    //         break;
-    //     }
-    // }
+    while (true) {
+        if (
+            !makeMove(priorityPlayer, board) ||
+            !makeMove(secondaryPlayer, board)
+        ) {
+            break;
+        }
+    }
 
     // Create a function makeMove(player)
     function makeMove(player, board) {
@@ -219,7 +228,6 @@ function Player(name, side) {
 
         // Place it by calling function in the Gameboard object (changeBoard with a number between 1 and 9) which would handle everything
         board.changeBoard(playerNumber, player.side);
-        console.log(board.getBoard());
 
         // All of the indented check in one if statement
         // Check if won vertically by calling function isWonVertically from Gameboard object pass (number and playerSide)
