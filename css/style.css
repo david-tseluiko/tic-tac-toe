@@ -1,3 +1,5 @@
+@import url("https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap");
+
 /* 1. Use a more-intuitive box-sizing model */
 *,
 *::before,
@@ -74,4 +76,114 @@ h6 {
     isolation: isolate;
 }
 
+a {
+    color: inherit;
+    text-decoration: none;
+}
+
+ul,
+ol {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+}
+
 /* ------------------------------------------------- */
+
+:root {
+    --dark-blue: #22223b;
+    --smoky-grape: #4a4e69;
+    --purple-gray: #9a8c98;
+    --light-pink: #c9ada7;
+    --white: #f2e9e4;
+}
+
+body {
+    background-color: var(--smoky-grape);
+    color: var(--white);
+
+    font-family: "Inter", sans-serif;
+    font-optical-sizing: auto;
+    font-weight: 500;
+    font-style: normal;
+    font-size: 16px;
+}
+
+.wrapper {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+[class*="__container"] {
+    max-width: 1280px;
+    padding: 0 15px;
+    margin: 0 auto;
+}
+
+.header,
+.footer {
+    min-height: 100px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background-color: var(--dark-blue);
+}
+.header__title {
+    font-size: 35px;
+}
+.main {
+    flex: 1;
+
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    margin-top: clamp(0rem, 6.2447rem + -15.2542vw, -2.8125rem);
+}
+.main__list {
+    width: 500px;
+    height: 500px;
+    margin: 0 auto;
+}
+
+.list {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    grid-template-rows: repeat(3, 1fr);
+    place-content: center;
+}
+
+.list__item {
+    display: grid;
+    place-items: center;
+    text-transform: uppercase;
+
+    font-size: 100px;
+}
+
+.list__item--border-right {
+    border-right: 7px solid var(--white);
+}
+
+.list__item--border-bottom {
+    border-bottom: 7px solid var(--white);
+}
+
+.footer {
+    min-height: 85px;
+}
+.title {
+    font-size: 18px;
+    text-transform: uppercase;
+    font-weight: 500;
+}
+.footer__link {
+    font-weight: 700;
+    transition: 0.3s ease all;
+}
+
+.footer__link:hover {
+    font-size: 22px;
+    color: #ffffff;
+}
