@@ -213,16 +213,11 @@ function Player(name, side) {
         makeMove(computer, randomNumber, board);
     }
 
-    async function clearBoard(board) {
+    async function resetTheGame(board) {
         await sleep(500);
         board.clearBoard();
-    }
-
-    function resetTheGame(board) {
-        clearBoard(board);
         isPriorityPlayer = true;
         computerFirstToMove(board);
-        return false;
     }
 
     // Create a function makeMove(player)
@@ -234,23 +229,18 @@ function Player(name, side) {
         // Place it by calling function in the Gameboard object (changeBoard with a number between 1 and 9) which would handle everything
         board.changeBoard(number, player.side);
 
-        // All of the indented check in one if statement
-        // Check if won vertically by calling function isWonVertically from Gameboard object pass (number and playerSide)
-        // Check if won horizontally by calling function isWonHorizontally from Gameboard object pass (number and playerSide)
-        // Check if won diagonally by calling function isWonDiagonally from Gameboard object pass (number and playerSide)
         if (
             board.isWonVertically(number, player.side) ||
             board.isWonHorizontally(number, player.side) ||
             board.isWonDiagonally(number, player.side)
         ) {
             alert(`${player.name.toUpperCase()} won!!`);
-            return resetTheGame(board);
-        }
-
-        // Check if there is still space in the list by calling function isTie in the Gameboard object
-        if (board.isTie()) {
-            alert(`${player.name.toUpperCase()} won!!`);
-            return resetTheGame(board);
+            resetTheGame(board);
+            return false;
+        } else if (board.isTie()) {
+            alert(`It's a tie!`);
+            resetTheGame(board);
+            return false;
         }
 
         return true;
