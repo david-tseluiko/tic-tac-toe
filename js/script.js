@@ -6,13 +6,25 @@ function Gameboard() {
     const cols = 3;
 
     const elements = Array.from(document.querySelectorAll(".list__item"));
-    let board = [];
-    // Store the gameboard in 3d array using the for loop (in order to make the checking for win a bit easier)
-    for (let i = 0; i < rows; i++) {
-        board[i] = [];
-        for (let j = 0; j < cols; j++) {
-            board[i].push(elements[translateToArrayStyle(i, j)]);
+    board = createBoard();
+
+    function createBoard() {
+        let board = [];
+        // Store the gameboard in 3d array using the for loop (in order to make the checking for win a bit easier)
+        for (let i = 0; i < rows; i++) {
+            board[i] = [];
+            for (let j = 0; j < cols; j++) {
+                board[i].push(elements[translateToArrayStyle(i, j)]);
+            }
         }
+
+        return board;
+    }
+
+    function clearBoard() {
+        elements.forEach((item) => {
+            item.textContent = "";
+        });
     }
 
     function getBoard() {
@@ -82,46 +94,24 @@ function Gameboard() {
         if ([2, 4, 6, 8].includes(number)) {
             return false;
         }
-        // Call function translateToBoardStyle and store in the in variables rows and cols
-        let [numberRow, numberColumn] = translateToBoardStyle(number);
 
-        // Loop through left and right diagonals
-        // Create leftDiagonal object that would store the column (start from 0 and each for loop += 4) and isWinning = true (false if at least one of the values is not playerSide)
-        const leftDiagonal = {
-            column: 0,
-            isWinning: true,
-        };
+        let itLeftDiagonalWinning = true;
+        let itRightDiagonalWinning = true;
 
-        // Create rightDiagonal object that would store the column (start from 8 and each for loop -= 4) and isWinning = true (false if at least one of the values is not playerSide)
-        const rightDiagonal = {
-            column: 0,
-            isWinning: true,
-        };
+        let rightDiagonalColumnIndex = 2;
 
-        // Create a for loop
-        // Loop (i) through each global row
         for (let i = 0; i < rows; i++) {
-            try {
-                if (board[i][leftDiagonal.column].textContent !== playerSide) {
-                    leftDiagonal.isWinning = false;
-                }
-            } catch (TypeError) {
-                leftDiagonal.isWinning = false;
+            if (board[i][i].textContent !== playerSide) {
+                itLeftDiagonalWinning = false;
             }
-
-            try {
-                if (board[i][rightDiagonal.column].textContent !== playerSide) {
-                    rightDiagonal.isWinning = false;
-                }
-            } catch (TypeError) {
-                rightDiagonal.isWinning = false;
+            if (
+                board[i][rightDiagonalColumnIndex--].textContent !== playerSide
+            ) {
+                itRightDiagonalWinning = false;
             }
-
-            leftDiagonal.column += 4;
-            rightDiagonal.column -= 4;
         }
 
-        return rightDiagonal.isWinning || leftDiagonal.isWinning;
+        return itLeftDiagonalWinning || itRightDiagonalWinning;
     }
 
     // Create function isTie with no parameters
@@ -145,6 +135,7 @@ function Gameboard() {
         isWonHorizontally,
         isWonDiagonally,
         isTie,
+        clearBoard,
     };
 }
 
@@ -159,93 +150,107 @@ function Player(name, side) {
 // Create a Game IIFE where all of the game stuff would be executed (need IIFE because otherwise someone can access the variables from the console)
 (function Game() {
     const board = Gameboard();
+    const boardItems = document.querySelectorAll(".list__item");
 
-    // Ask player1 which side they want to play: X or O
-    let firstPlayerSide;
+    let userSide;
 
     do {
-        firstPlayerSide = prompt(
-            "First player, do you want to play X or O?"
-        ).toLowerCase();
-    } while (firstPlayerSide !== "x" && firstPlayerSide !== "o");
+        userSide = prompt("What do you want to play X or O?").toLowerCase();
+    } while (userSide !== "x" && userSide !== "o");
 
-    let priorityPlayer;
-    let secondaryPlayer;
+    let user;
+    let computer;
 
-    // If player1 chooses X: store them as priorityPlayer objects. Player2 as the secondaryPlayer objects.
-    if (firstPlayerSide === "x") {
-        priorityPlayer = Player("First Player", "x");
-        secondaryPlayer = Player("Second Player", "o");
+    if (userSide === "x") {
+        user = Player("Player", "x");
+        computer = Player("Computer", "o");
     } else {
-        // If player1 chooses O: store them as secondaryPlayer objects. Player2 as the priorityPlayer objects.
-        priorityPlayer = Player("Second Player", "x");
-        secondaryPlayer = Player("First Player", "o");
+        computer = Player("Computer", "x");
+        user = Player("Player", "o");
     }
 
-    // start a loop that would be working until someone wins or the game ended because no more space left in gameboard list (while true)
-    while (true) {
-        if (
-            !makeMove(priorityPlayer, board) ||
-            !makeMove(secondaryPlayer, board)
-        ) {
-            break;
+    let isPriorityPlayer = true;
+
+    computerFirstToMove(board);
+
+    boardItems.forEach((item) => {
+        item.addEventListener("click", (event) => {
+            const elementIndex =
+                Array.from(boardItems).indexOf(event.target) + 1;
+
+            if (isPriorityPlayer && user.side === "x") {
+                if (makeMove(user, elementIndex, board)) {
+                    makeComputerMove(computer, board);
+                }
+            } else if (!isPriorityPlayer && user.side === "o") {
+                if (makeMove(user, elementIndex, board)) {
+                    makeComputerMove(computer, board);
+                }
+            }
+        });
+    });
+
+    function sleep(ms) {
+        return new Promise((resolve) => setTimeout(resolve, ms));
+    }
+
+    function computerFirstToMove(board) {
+        // check if computer is actually first to move
+        if (isPriorityPlayer && computer.side === "x") {
+            makeComputerMove(computer, board);
+            isPriorityPlayer = false;
         }
+    }
+
+    async function makeComputerMove(computer, board) {
+        let randomNumber;
+
+        do {
+            randomNumber = Math.floor(Math.random() * 9) + 1;
+        } while (board.isOccupied(randomNumber));
+
+        await sleep(300);
+        makeMove(computer, randomNumber, board);
+    }
+
+    async function clearBoard(board) {
+        await sleep(500);
+        board.clearBoard();
+    }
+
+    function resetTheGame(board) {
+        clearBoard(board);
+        isPriorityPlayer = true;
+        computerFirstToMove(board);
+        return false;
     }
 
     // Create a function makeMove(player)
-    function makeMove(player, board) {
-        // ask player.name where they want to place the player.side:
-        let playerNumber = +prompt(
-            `${player.name.toUpperCase()} where do you want to place your ${player.side.toUpperCase()}?`
-        );
-
-        // If they give number that is other than between 1 or 9 included ask them again
-        // If they want to place their side which is occupied already, ask them again
-        const boundaries = [1, 9];
-
-        while (
-            playerNumber < boundaries[0] ||
-            playerNumber > boundaries[1] ||
-            board.isOccupied(playerNumber) ||
-            isNaN(playerNumber)
-        ) {
-            if (
-                playerNumber < boundaries[0] ||
-                playerNumber > boundaries[1] ||
-                isNaN(playerNumber)
-            ) {
-                playerNumber = +prompt(
-                    `${player.name.toUpperCase()} please enter the number between ${
-                        boundaries[0]
-                    } and ${boundaries[1]}`
-                );
-            } else {
-                playerNumber = +prompt(
-                    `${player.name.toUpperCase()}, ${playerNumber} is already OCCUPIED, try a different number`
-                );
-            }
+    function makeMove(player, number, board) {
+        if (board.isOccupied(number)) {
+            return false;
         }
 
         // Place it by calling function in the Gameboard object (changeBoard with a number between 1 and 9) which would handle everything
-        board.changeBoard(playerNumber, player.side);
+        board.changeBoard(number, player.side);
 
         // All of the indented check in one if statement
         // Check if won vertically by calling function isWonVertically from Gameboard object pass (number and playerSide)
         // Check if won horizontally by calling function isWonHorizontally from Gameboard object pass (number and playerSide)
         // Check if won diagonally by calling function isWonDiagonally from Gameboard object pass (number and playerSide)
         if (
-            board.isWonVertically(playerNumber, player.side) ||
-            board.isWonHorizontally(playerNumber, player.side) ||
-            board.isWonDiagonally(playerNumber, player.side)
+            board.isWonVertically(number, player.side) ||
+            board.isWonHorizontally(number, player.side) ||
+            board.isWonDiagonally(number, player.side)
         ) {
             alert(`${player.name.toUpperCase()} won!!`);
-            return false;
+            return resetTheGame(board);
         }
 
         // Check if there is still space in the list by calling function isTie in the Gameboard object
         if (board.isTie()) {
-            alert("This is a draw");
-            return false;
+            alert(`${player.name.toUpperCase()} won!!`);
+            return resetTheGame(board);
         }
 
         return true;
