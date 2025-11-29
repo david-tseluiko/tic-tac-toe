@@ -96,6 +96,7 @@ ol {
     --purple-gray: #9a8c98;
     --light-pink: #c9ada7;
     --white: #f2e9e4;
+    --button-hover: #26263e;
 }
 
 body {
@@ -138,9 +139,50 @@ body {
 
     display: flex;
     flex-direction: column;
-    justify-content: center;
     margin-top: clamp(0rem, 6.2447rem + -15.2542vw, -2.8125rem);
+    padding: 20px 0;
 }
+
+.main__container {
+    flex: 1;
+
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 50px;
+}
+
+.main__buttons-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 30px;
+}
+
+.main__button {
+    padding: 15px 60px;
+    background-color: var(--dark-blue);
+    color: var(--white);
+    border: 0;
+    outline: 0;
+    border-radius: 10px;
+    font-size: 24px;
+    cursor: pointer;
+    text-transform: uppercase;
+    font-weight: 700;
+    transition: 0.3s ease all;
+}
+
+.main__button--active {
+    box-shadow: 0px 0px 27px -4px #000000;
+}
+
+.main__button:hover {
+    background-color: var(--button-hover);
+    font-size: 26px;
+    padding: 17px 62px;
+}
+
 .main__list {
     width: 500px;
     height: 500px;
