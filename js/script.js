@@ -151,23 +151,12 @@ function Player(name, side) {
 (function Game() {
     const board = Gameboard();
     const boardItems = document.querySelectorAll(".list__item");
-
-    let userSide;
-
-    do {
-        userSide = prompt("What do you want to play X or O?").toLowerCase();
-    } while (userSide !== "x" && userSide !== "o");
+    const sideButtons = document.querySelectorAll(".main__button");
 
     let user;
     let computer;
 
-    if (userSide === "x") {
-        user = Player("Player", "x");
-        computer = Player("Computer", "o");
-    } else {
-        computer = Player("Computer", "x");
-        user = Player("Player", "o");
-    }
+    assignSides(sideButtons);
 
     let isPriorityPlayer = true;
 
@@ -189,6 +178,36 @@ function Player(name, side) {
             }
         });
     });
+
+    sideButtons.forEach((item) => {
+        item.addEventListener("click", (event) => {
+            console.log(event.target.classList);
+
+            if (!event.target.classList.contains("main__button--active")) {
+                // event.target.classList.remove("main__button--active")
+                event.target.classList.add("main__button--active");
+
+                if (event.target.textContent === "o") {
+                    sideButtons[0].classList.remove("main__button--active");
+                } else {
+                    sideButtons[1].classList.remove("main__button--active");
+                }
+
+                assignSides(sideButtons);
+                resetTheGame(board, false);
+            }
+        });
+    });
+
+    function assignSides(sideButtons) {
+        if (sideButtons[0].classList.contains("main__button--active")) {
+            user = Player("Player", "x");
+            computer = Player("Computer", "o");
+        } else {
+            computer = Player("Computer", "x");
+            user = Player("Player", "o");
+        }
+    }
 
     function sleep(ms) {
         return new Promise((resolve) => setTimeout(resolve, ms));
@@ -213,8 +232,10 @@ function Player(name, side) {
         makeMove(computer, randomNumber, board);
     }
 
-    async function resetTheGame(board) {
-        await sleep(500);
+    async function resetTheGame(board, isSleepNeed=true) {
+        if (isSleepNeed) {
+            await sleep(500);
+        }
         board.clearBoard();
         isPriorityPlayer = true;
         computerFirstToMove(board);
