@@ -5,6 +5,8 @@ function Gameboard() {
     const rows = 3;
     const cols = 3;
 
+    const ul = document.querySelector(".list");
+
     const elements = Array.from(document.querySelectorAll(".list__item"));
     board = createBoard();
 
@@ -73,6 +75,14 @@ function Gameboard() {
                 return false;
             }
         }
+
+        const columnsList = [
+            "list--left-column",
+            "list--center-column",
+            "list--right-column",
+        ];
+        ul.classList.add(columnsList[numberColumn]);
+
         return true;
     }
 
@@ -86,6 +96,14 @@ function Gameboard() {
             // Check if each board[localRow][globalColumn] equal to playerSide
             if (board[numberRow][i].textContent !== playerSide) return false;
         }
+
+        const rowList = [
+            "list--first-row",
+            "list--second-row",
+            "list--third-row",
+        ];
+        ul.classList.add(rowList[numberRow]);
+
         return true;
     }
 
@@ -95,23 +113,29 @@ function Gameboard() {
             return false;
         }
 
-        let itLeftDiagonalWinning = true;
-        let itRightDiagonalWinning = true;
+        let isLeftDiagonalWinning = true;
+        let isRightDiagonalWinning = true;
 
         let rightDiagonalColumnIndex = 2;
 
         for (let i = 0; i < rows; i++) {
             if (board[i][i].textContent !== playerSide) {
-                itLeftDiagonalWinning = false;
+                isLeftDiagonalWinning = false;
             }
             if (
                 board[i][rightDiagonalColumnIndex--].textContent !== playerSide
             ) {
-                itRightDiagonalWinning = false;
+                isRightDiagonalWinning = false;
             }
         }
 
-        return itLeftDiagonalWinning || itRightDiagonalWinning;
+        if (isLeftDiagonalWinning) {
+            ul.classList.add("list--left-diagonal");
+        } else if (isRightDiagonalWinning) {
+            ul.classList.add("list--right-diagonal");
+        }
+
+        return isLeftDiagonalWinning || isRightDiagonalWinning;
     }
 
     // Create function isTie with no parameters
@@ -152,6 +176,7 @@ function Player(name, side) {
     const board = Gameboard();
     const boardItems = document.querySelectorAll(".list__item");
     const sideButtons = document.querySelectorAll(".main__button");
+    const ul = document.querySelector(".list");
 
     let user;
     let computer;
@@ -232,9 +257,12 @@ function Player(name, side) {
         makeMove(computer, randomNumber, board);
     }
 
-    async function resetTheGame(board, isSleepNeed=true) {
+    async function resetTheGame(board, isSleepNeed = true) {
         if (isSleepNeed) {
             await sleep(500);
+        }
+        if (ul.classList.length >= 3) {
+            ul.classList.remove(ul.classList[ul.classList.length - 1]);
         }
         board.clearBoard();
         isPriorityPlayer = true;
@@ -255,11 +283,10 @@ function Player(name, side) {
             board.isWonHorizontally(number, player.side) ||
             board.isWonDiagonally(number, player.side)
         ) {
-            alert(`${player.name.toUpperCase()} won!!`);
+            // alert(`${player.name.toUpperCase()} won!!`);
             resetTheGame(board);
             return false;
         } else if (board.isTie()) {
-            alert(`It's a tie!`);
             resetTheGame(board);
             return false;
         }

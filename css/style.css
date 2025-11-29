@@ -194,6 +194,56 @@ body {
     grid-template-columns: repeat(3, 1fr);
     grid-template-rows: repeat(3, 1fr);
     place-content: center;
+
+    position: relative;
+}
+
+[class*="list--"]::after {
+    position: absolute;
+    content: "";
+    height: 100%;
+    width: 10px;
+    background-color: var(--white);
+}
+
+.list--left-column::after {
+    left: 15%;
+}
+
+.list--center-column::after {
+    left: 48.5%;
+}
+
+.list--right-column::after {
+    right: 15%;
+}
+
+[class$="-row"]::after {
+    transform: rotate(90deg);
+    left: 50%;
+}
+
+.list--first-row::after {
+    top: -35%;
+}
+
+.list--third-row::after {
+    top: 35%;
+}
+
+[class$="-diagonal"]::after {
+    left: 50%;
+    height: 130%;
+}
+
+.list--right-diagonal::after {
+    transform: rotate(45deg);
+    top: -16.7%;
+}
+
+.list--left-diagonal::after {
+    transform: rotate(-45deg);
+    top: -14.5%;
 }
 
 .list__item {
